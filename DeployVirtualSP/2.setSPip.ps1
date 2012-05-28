@@ -18,6 +18,10 @@
 
 ## du må oppgi konto/pw for ESX-admin  og for  guest (administrator/ZheShiWO3) skal kunne automatisere det siste
 
+### den andre delen som omhandler innmelding i domenet fungerer ikke optimalt
+# istedenfor åkjøre den lokalt definerte kommandoen, søker den etter det samme skriptet lagret på domenekontroller
+## dette bør kontrolleres ettersom passordet til domeneadmin ligger i klartekst i fila.
+# bør fjerne fila etter at maskinene er konfigurerte
 
 Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
  $netshIP = "c:\windows\system32\netsh.exe interface ip set address ""Local Area Connection"" static $IP $SNM $GW 1"
@@ -34,7 +38,7 @@ Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
  
  Write-Host "Setting DNS completed"
  
- ##logger IP til fila "ipliste.txt"
+ ##logger VM-navn og IP til fila "ipliste.txt"
  $vmobj = Get-VM $vm
  $IP = $vmobj.guest.ipAddress 
  $vmobj.name+"    "+ $vmobj.guest.ipAddress | Out-File .\ipliste.txt -Append
@@ -48,11 +52,15 @@ Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
  $domain = "47p.aitel.hist.no"
  $shortDomain ="47p"
  $user = $shortDomain+"\administrator"
- $joinDomain = "add-computer -domainName $domain -credential $DCcred"
+ #$joinDomain = "add-computer -domainName $domain -credential $DCcred"
+ ##alternativ netdom-cmd
+ $joinDomain = "netdom join $VM /domain:47p.aitel.hist.no /reboot:2 " 
+  Write-Host $joinDomain
  Write-Host "Joiner domenet: $domain"
  Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "Set-ExecutionPolicy bypass -force "' 
- Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText $joinDomain
- #Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "\\158.38.43.125\47p\ps\autoJoinDomain.ps1"' 
+ Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType bat  -ScriptText $joinDomain
+# Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "\\158.38.43.125\47p\ps\autoJoinDomain.ps1"' 
+
 
  
 }
@@ -77,8 +85,8 @@ $dcpw = ConvertTo-SecureString "ZheShiWO3" -AsPlainText -Force
 $DCcred = New-Object System.Management.Automation.PSCredential ("47p\administrator", $DCpw)
 
 ### starter med maskin 1
-$n = 1
-$nmax = 5
+$n = 4
+$nmax = 4
 ###
 
 ### IP calc
@@ -102,7 +110,7 @@ while ($n -le $nmax)
 
 Set-WinVMIP $VM $HostCred $GuestCred $IP $SNM $GW
 Join-Domain $DCcred $VM $HostCred $GuestCred
-Get-VM "SharePoint$n" | Restart-VMGuest
+#Get-VM "SharePoint$n" | Restart-VMGuest
 $n++
 } #end while
 

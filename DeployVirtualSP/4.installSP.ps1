@@ -25,8 +25,8 @@ $HostCred = $Host.UI.PromptForCredential("Please enter credentials", "Enter ESX 
 ###
 
 
-$n = 4
-$nMax = 4
+$n = 1
+$nMax = 1
 while ($n -le $nMax) {
 $VMname = "SharePoint$n"
 Write-Host $VMname
