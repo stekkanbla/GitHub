@@ -1,4 +1,7 @@
-﻿### Legger til VMware.VimAutomation.Core snapin for tilgang på PowerCLI cmdlets ###
+﻿### .\1.DeplyVirtualMachine
+
+### å opprette 5 maskiner simultant tar ca 30min bare for oppretting, legg til minst 10 minutter mens de kjører Specification-konfigurasjon.
+### Legger til VMware.VimAutomation.Core snapin for tilgang på PowerCLI cmdlets ###
 #Add-PSSnapin VMware.VimAutomation.Core
 
 ### Henter loggin fra cred.xml for automatisk innloggin på vc-fag.studvir.aitel.hist. Passord hashed ###

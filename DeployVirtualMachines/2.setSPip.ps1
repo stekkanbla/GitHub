@@ -1,4 +1,5 @@
-﻿
+﻿##.\SetSPip.ps1
+
 ############## basert på http://www.virtu-al.net/2010/02/05/powercli-changing-a-vm-ip-address-with-invoke-vmscript/#viewSource 
 ### skriptet generer endel feilmeldinger, men det fungerer som forventet på Guesten UPDATE: Løst ved -ErrorAction SilentlyContinue
 ### det tar ca 2min å sette Ip og dns per maskin
@@ -52,12 +53,12 @@ Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
  Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "Set-ExecutionPolicy bypass -force "' 
  Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText $joinDomain
  #Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "\\158.38.43.125\47p\ps\autoJoinDomain.ps1"' 
- #Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "Restart-Computer"'
- # #-ScriptText $joinDomain 
+
  
 }
 
 #Connect-VIServer vc-fag.studvir.aitel.hist.no
+## dette må forandres ved behov .. oppgir her domenekontroller, siden den vites å befinner seg på samme host som de kommende SharePoint-installasjonene
 $ESXHost = get-vm Bach47e.dc2 | Get-VMHost
 
 ### host credentials..eneste behov for interaksjon med bruker...promptes etter dette automatisk
@@ -76,8 +77,8 @@ $dcpw = ConvertTo-SecureString "ZheShiWO3" -AsPlainText -Force
 $DCcred = New-Object System.Management.Automation.PSCredential ("47p\administrator", $DCpw)
 
 ### starter med maskin 1
-$n = 3
-$nmax = 3
+$n = 1
+$nmax = 5
 ###
 
 ### IP calc
