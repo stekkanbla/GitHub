@@ -1,5 +1,7 @@
 ﻿## bortimot en kopi av 2.setSPip. så se der for dokumentasjon
-
+## pass på at rett NIC blir benyttet for domenetrafikk
+## i dette oppsettet er det "Local Area Connection" som er ment som domenetrafikk
+## NIC2 er iSCSI-NIC
 Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW, $SanIP){
  $netshIP = "c:\windows\system32\netsh.exe interface ip set address ""Local Area Connection"" static $IP $SNM $GW 1"
  $netshIPSan = "c:\windows\system32\netsh.exe interface ip set address ""Local Area Connection 2"" static $SanIP $SNM"
