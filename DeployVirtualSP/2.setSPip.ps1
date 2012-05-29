@@ -1,27 +1,28 @@
 ﻿##.\SetSPip.ps1
 
 ############## basert på http://www.virtu-al.net/2010/02/05/powercli-changing-a-vm-ip-address-with-invoke-vmscript/#viewSource 
-### skriptet generer endel feilmeldinger, men det fungerer som forventet på Guesten UPDATE: Løst ved -ErrorAction SilentlyContinue
+### skriptet generer endel feilmeldinger, men det fungerer likevel som forventet på Guesten UPDATE: Løst ved -ErrorAction SilentlyContinue
 ### det tar ca 2min å sette Ip og dns per maskin
-### lite feilhåndterting..vurdere å legge inn test-connection... ikke alltids skrptet kjører rett på alle klienter
+
+## DEL 1
 ## skript for å sette IP på sharepoint-vmer fra powercli
 ## funker best hvis alle maskiner er på samme range 
 ## sett $ipStart til en mindre enn egentlig start siden vi legger til $n(nummer på installasjon) på $ipStart
 ## forutsetter at NICet kalles "Local Area Connection"
-
-
 ## oppretter selve funksjonen som er av typen netsh
-## variabler defineres senere
+## variabler defineres lenger ned
 
-## DNS1 må forandres hvis DC har en annen IP enn oppgitte 158.38.43.125
-
-
+### DEL 2  omhandler innmelding 
 ## du må oppgi konto/pw for ESX-admin  og for  guest (administrator/ZheShiWO3) skal kunne automatisere det siste
 
-### den andre delen som omhandler innmelding i domenet fungerer ikke optimalt
-# istedenfor åkjøre den lokalt definerte kommandoen, søker den etter det samme skriptet lagret på domenekontroller
-## dette bør kontrolleres ettersom passordet til domeneadmin ligger i klartekst i fila.
-# bør fjerne fila etter at maskinene er konfigurerte
+
+## Variabler som krever tilpasning:
+## DNS1 må forandres hvis DC har en annen IP enn oppgitte 158.38.43.125
+## $n og $nmax
+## $ipstart
+## $domain og $shortdomain
+
+
 
 Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
  $netshIP = "c:\windows\system32\netsh.exe interface ip set address ""Local Area Connection"" static $IP $SNM $GW 1"
@@ -53,7 +54,7 @@ Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
  $shortDomain ="47p"
  $user = $shortDomain+"\administrator"
   ## netdom-cmd
- $joinDomain = "netdom join $VM /domain:47p.aitel.hist.no /reboot:2 " 
+ $joinDomain = "netdom join $VM /domain:47p.aitel.hist.no /reboot:1 " 
   Write-Host $joinDomain
  Write-Host "Joiner domenet: $domain"
  Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "Set-ExecutionPolicy bypass -force "' 
