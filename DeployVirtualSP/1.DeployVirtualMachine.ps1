@@ -1,8 +1,10 @@
 ﻿### .\1.DeplyVirtualMachine
 
-### å opprette 5 maskiner simultant tar ca 30min bare for oppretting, legg til minst 10 minutter mens de kjører Specification-konfigurasjon.
+### å opprette 5 maskiner simultant tar ca 30min bare for oppretting, legg til minst 15 minutter mens de kjører Specification-konfigurasjon.
+# totalt bør det påberegnes en time før man kan gå til neste steg.
+
 ### Legger til VMware.VimAutomation.Core snapin for tilgang på PowerCLI cmdlets ###
-#Add-PSSnapin VMware.VimAutomation.Core
+Add-PSSnapin VMware.VimAutomation.Core
 
 ### Henter loggin fra cred.xml for automatisk innloggin på vc-fag.studvir.aitel.hist. Passord hashed ###
 ### Før du benytter denne metoden må du kjøre et script som lager XML-fila. Se under ###
@@ -13,9 +15,7 @@
 ### Kobler til vCenter ###
 $HostCred = $Host.UI.PromptForCredential("Please enter credentials", "Enter ESX host credentials for $ESXHost", "toroveorcli", "")
 Connect-VIServer -Server vc-fag.studvir.aitel.hist.no -Credential $HostCred
-#Get-Template -Name SharePointReady
-#Get-OSCustomizationSpec -id Bachelor47E.Template.Win2k8R2x64
-#New-vm -Name "MinVM" -VMHost "blad-06.virnett.aitel.hist.no" -ResourcePool "BACHELOR" -Location "47E" -DiskStorageFormat Thin -Datastore "QNAP-NFS"  -Template "W2k8R2.x64.template.47E"
+
 
 
 ##oppretter to looper for at maskinene skal lages kjappere
@@ -45,12 +45,12 @@ Write-host $template
  New-VM -Name $name -VMHost $Vmhost  -ResourcePool $ResourcePool -Location $location -Datastore $datastore -OSCustomizationSpec $osspec -Template SharePointReady -RunAsync
 $n++
 }
-## det blir mye venting mellom disse loopene, muligens best å splitte dem
+## det blir mye venting mellom disse loopene, derfor har jeg funnet det best å splitte dem heller enn å kjøre alt i en loop
 
 while ($m -le $mmax) {
 ### Starter nylig opprettet VM ###
 $name = "SharePoint$m"
 Get-VM $name | start-vm 
 $m++
-#Start-Sleep -Seconds 5
+
 }

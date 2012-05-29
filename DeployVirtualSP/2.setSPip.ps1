@@ -52,14 +52,13 @@ Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
  $domain = "47p.aitel.hist.no"
  $shortDomain ="47p"
  $user = $shortDomain+"\administrator"
- #$joinDomain = "add-computer -domainName $domain -credential $DCcred"
- ##alternativ netdom-cmd
+  ## netdom-cmd
  $joinDomain = "netdom join $VM /domain:47p.aitel.hist.no /reboot:2 " 
   Write-Host $joinDomain
  Write-Host "Joiner domenet: $domain"
  Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "Set-ExecutionPolicy bypass -force "' 
  Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType bat  -ScriptText $joinDomain
-# Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "\\158.38.43.125\47p\ps\autoJoinDomain.ps1"' 
+
 
 
  
@@ -76,6 +75,7 @@ $HostCred = $Host.UI.PromptForCredential("Please enter credentials", "Enter ESX 
 ###først oppgir vi passord for administrator og konverterer til securestring // fungerer ikke som ventet
 $PW = ConvertTo-SecureString "ZheShiWO3" -AsPlainText -Force
 #så bruker vi passordet for å opprette et objekt for creds
+# alternativ linje hvis du manuelt vil oppgi passord
 #$GuestCred = $Host.UI.PromptForCredential("Please enter credentials", "Enter Guest credentials for $VM", "administrator", "")
 $GuestCred = New-Object System.Management.Automation.PSCredential ("administrator", $PW)
 ###end
@@ -85,8 +85,8 @@ $dcpw = ConvertTo-SecureString "ZheShiWO3" -AsPlainText -Force
 $DCcred = New-Object System.Management.Automation.PSCredential ("47p\administrator", $DCpw)
 
 ### starter med maskin 1
-$n = 4
-$nmax = 4
+$n = 1
+$nmax = 5
 ###
 
 ### IP calc
@@ -110,7 +110,7 @@ while ($n -le $nmax)
 
 Set-WinVMIP $VM $HostCred $GuestCred $IP $SNM $GW
 Join-Domain $DCcred $VM $HostCred $GuestCred
-#Get-VM "SharePoint$n" | Restart-VMGuest
+
 $n++
 } #end while
 
@@ -119,6 +119,5 @@ $n++
 
 
 
-#Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "\\158.38.43.125\47p\ps\SP\getAdmin.ps1"' 
 
 
