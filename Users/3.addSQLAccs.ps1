@@ -1,5 +1,9 @@
+if ( (Get-PSSnapin -Name  Quest.ActiveRoles.ADManagement  -ErrorAction SilentlyContinue) -eq $null )
+{
+    Add-PSSnapin Quest.ActiveRoles.ADManagement 
+}
 
-$userlist = "\\bach47edc2\47p\ps\userlist\addUsers\sqlloopUsers.csv"
+$userlist = ".\sqlloopUsers.csv"
 $pw = read-host "Oppgi passord for de tre SQL-kontiene" -AsSecureString
 import-csv $userlist | ForEach-Object { 
 
@@ -24,7 +28,5 @@ else
 { write-host "oppretter" $login
 New-QADUser -name $login -SamAccountName $login -ParentContainer $komplett -userPassword $pw `
 |Enable-QADUser }##end if exists
-
-
 
 }
