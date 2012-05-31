@@ -23,6 +23,8 @@
 ## $domain og $shortdomain
 
 
+#Connect-VIServer -Server vc-fag.studvir.aitel.hist.no
+
 
 Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
  $netshIP = "c:\windows\system32\netsh.exe interface ip set address ""Local Area Connection"" static $IP $SNM $GW 1"
@@ -48,16 +50,16 @@ Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
 }
  
  
- Function Join-Domain ($DCcred, $VM, $HC, $GC ) {
+ Function Join-Domain ($VM, $HC, $GC ) {
 
  $domain = "47p.aitel.hist.no"
  $shortDomain ="47p"
  $user = $shortDomain+"\administrator"
   ## netdom-cmd
  $joinDomain = "netdom join $VM /domain:47p.aitel.hist.no /reboot:1 " 
-  Write-Host $joinDomain
+ Write-Host $joinDomain
  Write-Host "Joiner domenet: $domain"
- Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "Set-ExecutionPolicy bypass -force "' 
+ #Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "Set-ExecutionPolicy bypass -force "' 
  Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType bat  -ScriptText $joinDomain
 
 
@@ -80,14 +82,16 @@ $PW = ConvertTo-SecureString "ZheShiWO3" -AsPlainText -Force
 #$GuestCred = $Host.UI.PromptForCredential("Please enter credentials", "Enter Guest credentials for $VM", "administrator", "")
 $GuestCred = New-Object System.Management.Automation.PSCredential ("administrator", $PW)
 ###end
+
 	
+## denne delen trengs ikke når man kjører netdom.. var brukt for powershell-varianten
 $dcpw = ConvertTo-SecureString "ZheShiWO3" -AsPlainText -Force
 ##### DC cred (litt shaky i klartekst
 $DCcred = New-Object System.Management.Automation.PSCredential ("47p\administrator", $DCpw)
 
 ### starter med maskin 1
-$n = 1
-$nmax = 5
+$n = 3
+$nmax = 3
 ###
 
 ### IP calc
@@ -109,8 +113,8 @@ while ($n -le $nmax)
 	$SNM = "255.255.255.0"
 	$GW = "158.38.43.1"
 
-Set-WinVMIP $VM $HostCred $GuestCred $IP $SNM $GW
-Join-Domain $DCcred $VM $HostCred $GuestCred
+#Set-WinVMIP $VM $HostCred $GuestCred $IP $SNM $GW
+Join-Domain $VM $HostCred $GuestCred
 
 $n++
 } #end while
