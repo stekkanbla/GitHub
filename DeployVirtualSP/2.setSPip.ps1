@@ -59,8 +59,7 @@ Function Set-WinVMIP ($VM, $HC, $GC, $IP, $SNM, $GW){
  $joinDomain = "netdom join $VM /domain:47p.aitel.hist.no /reboot:1 " 
  Write-Host $joinDomain
  Write-Host "Joiner domenet: $domain"
- #Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType PowerShell  -ScriptText '&"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "Set-ExecutionPolicy bypass -force "' 
- Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType bat  -ScriptText $joinDomain
+  Invoke-VMScript -VM $VM -HostCredential $HC -GuestCredential $GC -ScriptType bat  -ScriptText $joinDomain
 
 
 
@@ -90,8 +89,8 @@ $dcpw = ConvertTo-SecureString "ZheShiWO3" -AsPlainText -Force
 $DCcred = New-Object System.Management.Automation.PSCredential ("47p\administrator", $DCpw)
 
 ### starter med maskin 1
-$n = 3
-$nmax = 3
+$n = 1
+$nmax = 5
 ###
 
 ### IP calc
@@ -109,11 +108,11 @@ while ($n -le $nmax)
 	$VM = "SharePoint$n"
 	$ESXHost = get-vm $vm | Get-VMHost
 
-	$IP = "158.38.57.$IPcurrent"
+	#$IP = "158.38.57.$IPcurrent"
 	$SNM = "255.255.255.0"
 	$GW = "158.38.43.1"
 
-#Set-WinVMIP $VM $HostCred $GuestCred $IP $SNM $GW
+Set-WinVMIP $VM $HostCred $GuestCred $IP $SNM $GW
 Join-Domain $VM $HostCred $GuestCred
 
 $n++

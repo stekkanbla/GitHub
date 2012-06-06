@@ -7,12 +7,11 @@
 
 ### Legger til VMware.VimAutomation.Core snapin for tilgang på PowerCLI cmdlets ###
 Add-PSSnapin VMware.VimAutomation.Core
-
-
+Connect-VIServer -Server vc-fag.studvir.aitel.hist.no -Credential $HostCred
 
 ### Kobler til vCenter ###
 $HostCred = $Host.UI.PromptForCredential("Please enter credentials", "Enter ESX host credentials for $ESXHost", "toroveorcli", "")
-Connect-VIServer -Server vc-fag.studvir.aitel.hist.no -Credential $HostCred
+
 
 
 
